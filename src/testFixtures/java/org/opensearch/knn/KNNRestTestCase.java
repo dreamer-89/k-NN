@@ -146,6 +146,9 @@ public class KNNRestTestCase extends ODFERestTestCase {
      * Create KNN Index with default settings
      */
     protected void createKnnIndex(String index, String mapping) throws IOException {
+        Request updateSetttings = new Request("PUT", "/_cluster/settings");
+        updateSetttings.setJsonEntity("{\"persistent\": {\"logger.org.opensearch.indices.replication\" : \"TRACE\"}}");
+        client().performRequest(updateSetttings);
         createIndex(index, getKNNDefaultIndexSettings());
         putMappingRequest(index, mapping);
     }
@@ -154,6 +157,9 @@ public class KNNRestTestCase extends ODFERestTestCase {
      * Create KNN Index
      */
     protected void createKnnIndex(String index, Settings settings, String mapping) throws IOException {
+        Request updateSetttings = new Request("PUT", "/_cluster/settings");
+        updateSetttings.setJsonEntity("{\"persistent\": {\"logger.org.opensearch.indices.replication\" : \"TRACE\"}}");
+        client().performRequest(updateSetttings);
         createIndex(index, settings);
         putMappingRequest(index, mapping);
     }
@@ -379,6 +385,12 @@ public class KNNRestTestCase extends ODFERestTestCase {
         return (Integer) responseMap.get("count");
     }
 
+    public void printIndexSettings(String index) throws IOException {
+        Request indexSettings = new Request("GET", index + "/_settings?pretty");
+        String idxSettings = EntityUtils.toString(client().performRequest(indexSettings).getEntity()).trim();
+        logger.info("idxSettings : {}", idxSettings);
+    }
+
     /**
      * Force merge KNN index segments
      */
@@ -523,7 +535,12 @@ public class KNNRestTestCase extends ODFERestTestCase {
      * Return default index settings for index creation
      */
     protected Settings getKNNDefaultIndexSettings() {
-        return Settings.builder().put("number_of_shards", 1).put("number_of_replicas", 0).put("index.knn", true).build();
+        return Settings.builder()
+            .put("number_of_shards", 1)
+            .put("number_of_replicas", 1)
+            .put("replication.type", "SEGMENT")
+            .put("index.knn", true)
+            .build();
     }
 
     /**

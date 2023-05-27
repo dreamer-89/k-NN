@@ -370,6 +370,13 @@ public class OpenSearchIT extends KNNRestTestCase {
         String field2 = "field2";
         createKnnIndex(INDEX_NAME, createKnnIndexMapping(Arrays.asList(field1, field2), Arrays.asList(2, 2)));
 
+        logger.info(
+            "--> _cat/shards \n{}",
+            EntityUtils.toString(client().performRequest(new Request("GET", "/_cat/shards?v")).getEntity())
+        );
+
+        logger.info("--> _cat/nodes \n{}", EntityUtils.toString(client().performRequest(new Request("GET", "/_cat/nodes?v")).getEntity()));
+
         Float[] vector = { 6.0f, 7.0f };
         addKnnDoc(INDEX_NAME, "1", Arrays.asList(field1, field2), Arrays.asList(vector, vector));
 

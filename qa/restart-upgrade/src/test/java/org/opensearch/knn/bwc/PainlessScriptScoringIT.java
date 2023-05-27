@@ -5,6 +5,8 @@
 
 package org.opensearch.knn.bwc;
 
+import org.opensearch.client.Request;
+
 public class PainlessScriptScoringIT extends AbstractRestartUpgradeTestCase {
     private static final String TEST_FIELD = "test-field";
     private static final int DIMENSIONS = 5;
